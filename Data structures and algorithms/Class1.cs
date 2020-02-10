@@ -29,7 +29,7 @@ namespace Graphs
 
     class Graph
     {
-        private List<SortedList<int,int>> Edges;
+        public List<SortedList<int,int>> Edges;
 
         public Graph() {
             Edges = new List<SortedList<int, int>>(); 
@@ -45,6 +45,16 @@ namespace Graphs
         {
             Edges[V1].Add(V2, Weigth);
             Edges[V2].Add(V1, Weigth);
+        }
+
+        public SortedList<int, int> GetVertex(int Value)
+        {
+            foreach (SortedList<int, int> Verticies in Edges)
+            {
+                if (Verticies.Keys[Verticies.IndexOfValue(0)] == Value)
+                    return Verticies;
+            }
+            return null;
         }
 
         public void RemoveEdge(int V1, int V2)
