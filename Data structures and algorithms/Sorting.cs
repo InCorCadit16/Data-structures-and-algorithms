@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections;
 
-namespace Data_structures_and_algorithms
+namespace Sort
 {
     class Sorting
     {
@@ -26,7 +26,7 @@ namespace Data_structures_and_algorithms
         }
 
 
-        private void BinarySearch(int n)
+        public void BinarySearch(int n)
         {
             int[] range = new int[1024];
             for (int i = 0; i < range.Length; i++)
@@ -380,7 +380,7 @@ namespace Data_structures_and_algorithms
 
         private void CountingSort(int[] arr)
         {
-            int[] count = new int[1001];
+            int[] count = new int[10001];
             int i,j;
             for (i = 0; i < count.Length;i++) count[i] = 0;
 
@@ -443,19 +443,19 @@ namespace Data_structures_and_algorithms
 
         static void Main(string[] args)
         {
-            int[] input = new int[10000];
+            int[] input = new int[15];
             Random random = new Random();
             for (int i = 0; i < input.Length; i++)
             {
                 input[i] = random.Next(1, 1000);
             }
-            Sorting Sort = new Sorting();
+            Sorting Sorting = new Sorting();
 
-            // Sort.WriteArray("initial array: ", input);
+            Sorting.WriteArray("initial array: ", input);
             DateTime start = DateTime.Now;
-            Sort.QuickSort(input,0,input.Length - 1);
+            Sorting.OptimizedBubbleSort(input);         
             DateTime end = DateTime.Now;
-            // Sort.WriteArray("sorted array: ", input);
+            Sorting.WriteArray("sorted array: ", input);
             Console.WriteLine("time: {0:F6} ", ((float)Math.Abs(end.Millisecond - start.Millisecond))/1000);
         }
     }
