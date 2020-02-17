@@ -376,14 +376,14 @@ namespace Data_structures_and_algorithms
 
         private void CountingSort(int[] arr)
         {
-            int[] count = new int[1001];
+            int[] count = new int[getMax(arr) + 1];
             int i,j;
             for (i = 0; i < count.Length;i++) count[i] = 0;
 
             for (i = 0; i < arr.Length; i++) count[arr[i]]++;
 
             int b = 0;
-            for (i = 0; i < 1001;i++)
+            for (i = 0; i < count.Length; i++)
             {
                 for (j = 0; j < count[i]; j++)
                 {
@@ -428,8 +428,9 @@ namespace Data_structures_and_algorithms
 
             for (i = arr.Length - 1; i >= 0; i--)
             {
-                output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-                count[(arr[i] / exp) % 10]--;
+                int pos = count[(arr[i] / exp) % 10];
+                output[pos - 1] = arr[i];
+                count[pos]--;
             }
 
             for (i = 0; i < arr.Length; i++)
@@ -439,40 +440,31 @@ namespace Data_structures_and_algorithms
 
         static void Main(string[] args)
         {
-            int[] input = new int[30000];
-            int[] input1 = new int[30000];
-            int[] input2 = new int[30000];
+            int[] input = new int[10];
+            int[] input1 = new int[10];
+            int[] input2 = new int[6];
             Random random = new Random();
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = random.Next(1, 1000);
+                input[i] = random.Next(1, 3000);
                 input1[i] = input[i];
-                input2[i] = input[i];
+                //input2[i] = input[i];
             }
+            
 
             Sorting Sort = new Sorting();
             /*Sort.WriteArray("input : ", input);
             Sort.WriteArray("input1: ", input1);
             Sort.WriteArray("input2: ", input2);*/
 
-            SortDelegate Insertion = new SortDelegate(Sort.InsertionSort);
-            PrintTime(Insertion, input);
-
-            SortDelegate BinaryInsertion = new SortDelegate(Sort.BinaryInsertionSort);
-            PrintTime(BinaryInsertion, input1);
-
-            SortDelegate HeapSort = new SortDelegate(Sort.HeapSort);
-            PrintTime(HeapSort, input2);
-
+            PrintTime(Sort.MergeSort, input, 0, input.Length - 1);
 
             /*Sort.WriteArray("input sorted : ", input);
             Sort.WriteArray("input1 sorted: ", input1);
             Sort.WriteArray("input2 sorted: ", input2);*/
         }
 
-       public delegate void SortDelegate(int[] input);
-
-        static void PrintTime(SortDelegate Function, int[] input)
+        static void PrintTime(Action<int[]> Function, int[] input)
         {
             DateTime start = DateTime.Now;
             Function(input);
@@ -481,6 +473,28 @@ namespace Data_structures_and_algorithms
             int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
             string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
             Console.WriteLine("{0} time: {1:F6} ",  MethodName ,(Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+        }
+
+        static void PrintTime(Action<int[], int> Function, int[] input, int i)
+        {
+            DateTime start = DateTime.Now;
+            Function(input, i);
+            DateTime end = DateTime.Now;
+            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
+            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
+            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
+            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+        }
+
+        static void PrintTime(Action<int[], int, int> Function, int[] input, int l, int r)
+        {
+            DateTime start = DateTime.Now;
+            Function(input, l, r);
+            DateTime end = DateTime.Now;
+            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
+            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
+            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
+            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
         }
     }
 }
