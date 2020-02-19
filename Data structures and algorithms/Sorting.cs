@@ -2,7 +2,7 @@
 using System.IO;
 using System.Collections;
 
-namespace Sort
+namespace Data_structures_and_algorithms
 {
     class Sorting
     {
@@ -26,7 +26,7 @@ namespace Sort
         }
 
 
-        public void BinarySearch(int n)
+        private void BinarySearch(int n)
         {
             int[] range = new int[1024];
             for (int i = 0; i < range.Length; i++)
@@ -255,24 +255,20 @@ namespace Sort
 
         private int partition(int[] arr, int low, int high)
         {
-            int pivot = arr[high];
-            int i = low - 1;
-            int buf;
-            for (int j = low; j < high; j++)
+            var p = arr[new Random().Next(low, high)];
+            Swap(ref arr[p], ref arr[high]);
+            p = arr[high];
+            var i = p - 1;
+            for (int j = p; j < high; j++)
             {
-                if (arr[j] < pivot)
+                if (arr[j] < p)
                 {
                     i++;
-
-                    buf = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = buf;
+                    Swap(ref arr[i], ref arr[j]);
                 }
             }
 
-            buf = arr[i + 1];
-            arr[i + 1] = arr[high];
-            arr[high] = buf;
+            Swap(ref arr[i + 1], ref arr[high]);
             return i + 1;
         }
 
@@ -333,61 +329,61 @@ namespace Sort
         // Главное, это расставить все элементы в массиве по правилам хипа
         // (процедура идёт с самых нижних узлов к верхним)
         // Затем каждый элемент последовательно ставиться в верх хипа и процедура вызывается рекурсивно.
-        private void HeapSort(int[] arr)
+        public void HeapSort(int[] arr)
         {
-            for (int i = arr.Length/2 - 1; i >= 0; i--)
+            int HeapSize = arr.Length;
+            BuilMaxHeap(arr, HeapSize);
+            
+            for (int i = arr.Length - 1; i > 0; i--)
             {
-                heapify(arr, arr.Length, i);
-            }
-
-            int buf;
-            for (int i = arr.Length - 1; i >= 0; i--)
-            {
-                buf = arr[0];
-                arr[0] = arr[i];
-                arr[i] = buf;
-
-                heapify(arr, i,0);
+                Swap(ref arr[0], ref arr[i]);
+                HeapSize--;
+                MaxHeapify(arr, 0, HeapSize);
             }
         }
 
-        private void heapify(int[] arr, int n, int i)
+        private void BuilMaxHeap(int[] arr, int HeapSize)
         {
-            int largest = i;
-            int l = 2 * i + 1;
-            int r = 2 * i + 2;
-            
-            if (l < n && arr[l] > arr[largest])
-            {
-                largest = l;
-            }
+            for (int i = arr.Length / 2; i >= 0; i--)
+                MaxHeapify(arr, i, HeapSize);
+        }
 
-            if (r < n && arr[r] > arr[largest])
-            {
-                largest = r;
-            }
+        private void Swap(ref int a, ref int b)
+        {
+            a += b;
+            b = a - b;
+            a -= b;
+        }
 
-            int buf;
+        private void MaxHeapify(int[] arr, int i, int HeapSize)
+        {
+            int left = 2*i + 1;
+            int right = 2*i + 2;
+            var largest = i;
+            if (left < HeapSize && arr[i] < arr[left])
+                largest = left;
+
+            if (right < HeapSize && arr[largest] < arr[right])
+                largest = right;
+
             if (largest != i)
             {
-                buf = arr[i];
-                arr[i] = arr[largest];
-                arr[largest] = buf;
-
-                heapify(arr, n, largest);
+                Swap(ref arr[largest], ref arr[i]);
+                MaxHeapify(arr, largest, HeapSize);
             }
         }
+
 
         private void CountingSort(int[] arr)
         {
-            int[] count = new int[10001];
+            int[] count = new int[getMax(arr) + 1];
             int i,j;
             for (i = 0; i < count.Length;i++) count[i] = 0;
 
             for (i = 0; i < arr.Length; i++) count[arr[i]]++;
 
             int b = 0;
-            for (i = 0; i < 1001;i++)
+            for (i = 0; i < count.Length; i++)
             {
                 for (j = 0; j < count[i]; j++)
                 {
@@ -432,8 +428,9 @@ namespace Sort
 
             for (i = arr.Length - 1; i >= 0; i--)
             {
-                output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-                count[(arr[i] / exp) % 10]--;
+                int pos = count[(arr[i] / exp) % 10];
+                output[pos - 1] = arr[i];
+                count[pos]--;
             }
 
             for (i = 0; i < arr.Length; i++)
@@ -443,20 +440,61 @@ namespace Sort
 
         static void Main(string[] args)
         {
-            int[] input = new int[15];
+            int[] input = new int[10];
+            int[] input1 = new int[10];
+            int[] input2 = new int[6];
             Random random = new Random();
             for (int i = 0; i < input.Length; i++)
             {
-                input[i] = random.Next(1, 1000);
+                input[i] = random.Next(1, 3000);
+                input1[i] = input[i];
+                //input2[i] = input[i];
             }
-            Sorting Sorting = new Sorting();
+            
 
-            Sorting.WriteArray("initial array: ", input);
+            Sorting Sort = new Sorting();
+            /*Sort.WriteArray("input : ", input);
+            Sort.WriteArray("input1: ", input1);
+            Sort.WriteArray("input2: ", input2);*/
+
+            PrintTime(Sort.MergeSort, input, 0, input.Length - 1);
+
+            /*Sort.WriteArray("input sorted : ", input);
+            Sort.WriteArray("input1 sorted: ", input1);
+            Sort.WriteArray("input2 sorted: ", input2);*/
+        }
+
+        static void PrintTime(Action<int[]> Function, int[] input)
+        {
             DateTime start = DateTime.Now;
-            Sorting.OptimizedBubbleSort(input);         
+            Function(input);
             DateTime end = DateTime.Now;
-            Sorting.WriteArray("sorted array: ", input);
-            Console.WriteLine("time: {0:F6} ", ((float)Math.Abs(end.Millisecond - start.Millisecond))/1000);
+            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
+            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
+            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
+            Console.WriteLine("{0} time: {1:F6} ",  MethodName ,(Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+        }
+
+        static void PrintTime(Action<int[], int> Function, int[] input, int i)
+        {
+            DateTime start = DateTime.Now;
+            Function(input, i);
+            DateTime end = DateTime.Now;
+            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
+            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
+            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
+            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+        }
+
+        static void PrintTime(Action<int[], int, int> Function, int[] input, int l, int r)
+        {
+            DateTime start = DateTime.Now;
+            Function(input, l, r);
+            DateTime end = DateTime.Now;
+            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
+            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
+            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
+            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
         }
     }
 }

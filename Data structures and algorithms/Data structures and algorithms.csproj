@@ -4,8 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Data_structures_and_algorithms</RootNamespace>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject>Graphs.Test</StartupObject>
+    <StartupObject>Data_structures_and_algorithms.Sorting</StartupObject>
   </PropertyGroup>
 
 </Project>
