@@ -12,27 +12,27 @@ namespace Graphs
             Graph FirstGraph = new Graph();
             FirstGraph.AddVerticies(5);
 
-            FirstGraph.AddEdge(1,2,3);
-            FirstGraph.AddEdge(1,3,6);
-            FirstGraph.AddEdge(2,4,5);
-            FirstGraph.AddEdge(3,4,9);
-            FirstGraph.AddEdge(2,3,8);
-            FirstGraph.AddEdge(1,5,17);
-            FirstGraph.AddEdge(4,5,25);
+            FirstGraph.AddEdge(0,1,2);
+            FirstGraph.AddEdge(0,2,5);
+            FirstGraph.AddEdge(1,3,4);
+            FirstGraph.AddEdge(0,3,8);
+            FirstGraph.AddEdge(1,2,7);
+            FirstGraph.AddEdge(0,4,16);
+            FirstGraph.AddEdge(3,4,24);
             
 
             FirstGraph.PrintGraph();
 
             FirstGraph.AddVertex();
 
-            FirstGraph.AddEdge(2, 6, 15);
-            FirstGraph.AddEdge(4, 6, 8);
+            FirstGraph.AddEdge(1, 5, 15);
+            FirstGraph.AddEdge(3, 5, 8);
 
             FirstGraph.PrintGraph();
 
-            FirstGraph.RemoveEdge(1, 3);
+            FirstGraph.RemoveEdge(0, 2);
 
-            FirstGraph.RemoveVertex(5);
+            FirstGraph.RemoveVertex(4);
 
             FirstGraph.PrintGraph();
         }
@@ -53,19 +53,19 @@ namespace Graphs
 
         public void AddEdge(int V1, int V2, int Weigth)
         {
-            Verticies[V1-1].Add(V2, Weigth);
-            Verticies[V2-1].Add(V1, Weigth);
+            Verticies[V1].Add(V2, Weigth);
+            Verticies[V2].Add(V1, Weigth);
         }
 
         public SortedList<int, int> GetVertex(int Value)
         {
-            return Verticies[Value-1];
+            return Verticies[Value];
         }
 
         public void RemoveEdge(int V1, int V2)
         {
-            Verticies[V1-1].Remove(V2);
-            Verticies[V2-1].Remove(V1);
+            Verticies[V1].Remove(V2);
+            Verticies[V2].Remove(V1);
         }
 
         public void AddVertex()
@@ -92,7 +92,7 @@ namespace Graphs
                 Console.WriteLine("Vertex {0} is connected to: ", Verticies.IndexOf(Edges) + 1);
                 foreach (KeyValuePair<int,int> Pair in Edges)
                 {
-                    Console.Write("{0} ({1}); ", Pair.Key, Pair.Value);
+                    Console.Write("{0} ({1}); ", Pair.Key + 1, Pair.Value);
                 }
                 Console.WriteLine("\n");
             }
