@@ -29,53 +29,59 @@ namespace Graphs
 
     class Graph
     {
-        public List<SortedList<int,int>> Edges;
+        public List<SortedList<int,int>> Vertices;
 
         public Graph() {
-            Edges = new List<SortedList<int, int>>(); 
+            Vertices = new List<SortedList<int, int>>(); 
         }
 
         public void AddEdge(int V1, int V2)
         {
-            Edges[V1].Add(V2,1);
-            Edges[V2].Add(V1,1);
+            Vertices[V1].Add(V2,1);
+            Vertices[V2].Add(V1,1);
         }
 
         public void AddEdge(int V1, int V2, int Weigth)
         {
-            Edges[V1].Add(V2, Weigth);
-            Edges[V2].Add(V1, Weigth);
-        }
-
-        public SortedList<int, int> GetVertex(int Value)
-        {
-            foreach (SortedList<int, int> Verticies in Edges)
-            {
-                if (Verticies.Keys[Verticies.IndexOfValue(0)] == Value)
-                    return Verticies;
-            }
-            return null;
+            Vertices[V1].Add(V2, Weigth);
+            Vertices[V2].Add(V1, Weigth);
         }
 
         public void RemoveEdge(int V1, int V2)
         {
-            Edges[V1].Remove(V2);
-            Edges[V2].Remove(V1);
+            Vertices[V1].Remove(V2);
+            Vertices[V2].Remove(V1);
+        }
+
+        public SortedList<int, int> GetVertex(int Value)
+        {
+            foreach (SortedList<int, int> Edges in Vertices)
+            {
+                if (Edges.Keys[Edges.IndexOfValue(0)] == Value)
+                    return Edges;
+            }
+            return null;
         }
 
         public void AddVertex(int Value)
         {
-            Edges.Add(new SortedList<int, int>());
-            Edges[Edges.Count - 1].Add(Value, 0);
+            Vertices.Add(new SortedList<int, int>());
+            Vertices[Vertices.Count - 1].Add(Value, 0);
+        }
+
+        public void RemoveVertex(int Value)
+        {
+            Vertices.Remove(Vertices[Value]);
+            Vertices.ForEach(Edges => Edges.Remove(Value));
         }
 
         public void PrintGraph()
         {
-            foreach (SortedList<int,int> Verticies in Edges)
+            foreach (SortedList<int,int> Edges in Vertices)
             {
-                int Value = Verticies.Keys[Verticies.IndexOfValue(0)];
+                int Value = Edges.Keys[Edges.IndexOfValue(0)];
                 Console.WriteLine("Vertex with value {0} is connected to: ", Value);
-                foreach (KeyValuePair<int,int> Pair in Verticies)
+                foreach (KeyValuePair<int,int> Pair in Edges)
                 {
                     if (Pair.Key == Value) continue;
                     Console.Write("{0} ({1}); ", Pair.Key, Pair.Value);
