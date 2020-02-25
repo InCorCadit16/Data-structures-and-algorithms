@@ -10,40 +10,138 @@ namespace Graphs
         public static void Main(string[] args)
         {
             Graph FirstGraph = new Graph();
-            FirstGraph.AddVerticies(5);
+            FirstGraph.AddVerticies(9);
 
-            FirstGraph.AddEdge(0,1,2);
-            FirstGraph.AddEdge(0,2,5);
-            FirstGraph.AddEdge(1,3,4);
-            FirstGraph.AddEdge(0,3,8);
-            FirstGraph.AddEdge(1,2,7);
-            FirstGraph.AddEdge(0,4,16);
-            FirstGraph.AddEdge(3,4,24);
+            FirstGraph.AddEdge(0, 1, 8);
+            FirstGraph.AddEdge(0, 8, 4);
+            FirstGraph.AddEdge(1, 2, 7);
+            FirstGraph.AddEdge(1, 4, 4);
+            FirstGraph.AddEdge(1, 6, 2);
+            FirstGraph.AddEdge(2, 4, 14);
+            FirstGraph.AddEdge(2, 3, 9);
+            FirstGraph.AddEdge(3, 4, 10);
+            FirstGraph.AddEdge(4, 5, 2);
+            FirstGraph.AddEdge(5, 6, 6);
+            FirstGraph.AddEdge(5, 7, 1);
+            FirstGraph.AddEdge(6, 7, 7);
+            FirstGraph.AddEdge(7, 0, 11);
+            FirstGraph.AddEdge(7, 8, 8);
+
+            Prim(FirstGraph).PrintGraph();
+            
+        }
+
+        
+
+        static Graph Kruskal(Graph I)
+        {
+            Graph A = new Graph();
+            A.AddVerticies(I.Vertices.Count);
+            var Sets = new List<HashSet<int>>();
+
+            var Edges = new List<Edge>();
+            for (int i = 0; i < I.Vertices.Count; i++)
+            {
+                var Set = new HashSet<int>();
+                Sets.Add(Set);
+                Set.Add(i);
+
+                foreach (var edge in I.GetVertex(i))
+                {
+                    if (!Edges.Any(Edge => Edge.left == edge.Key && Edge.right == i))
+                        Edges.Add(new Edge { left = i, right = edge.Key, weight = edge.Value });
+                }
+            }
+
+            SortEdges(Edges);
+            foreach (var Edge in Edges)
+            {
+                var SetL = SetContainsValue(Sets, Edge.left);
+                var SetR = SetContainsValue(Sets, Edge.right);
+                if (SetL != SetR)
+                {
+                    A.AddEdge(Edge.left, Edge.right, Edge.weight);
+                    Union(Sets, SetL, SetR);
+                }
+            }
+
+            return A;
+        }
+
+        // For Kruskal
+        struct Edge
+        {
+            public int left, right;
+            public int weight;
+        }
+
+        // For Kruskal
+        static void SortEdges(List<Edge> Edges)
+        {
+            for (int i = 0; i < Edges.Count; i++)
+            {
+                Edge min = Edges[i];
+                int min_i = i;
+                for (int n = i + 1; n < Edges.Count; n++)
+                {
+                    if (Edges[n].weight < min.weight)
+                    {
+                        min = Edges[n]; min_i = n;
+                    }
+                }
+
+                Edges[min_i] = Edges[i];
+                Edges[i] = min;
+            }
+        }
+
+        // For Kruskal
+        static HashSet<int> SetContainsValue(List<HashSet<int>> Sets, int value)
+        {
+            foreach(var Set in Sets)
+            {
+                if (Set.Contains(value)) return Set;
+            }
+            return null;
+        }
+
+        // For Kruskal
+        static void Union(List<HashSet<int>> Sets, HashSet<int> SetL, HashSet<int> SetR)
+        {
+            foreach (var Vertex in SetR)
+            {
+                SetL.Add(Vertex);
+            }
+            Sets.Remove(SetR);
+        }
+
+        static Graph Prim(Graph I)
+        {
+            Graph A = new Graph();
+            A.AddVerticies(I.Vertices.Count);
+            var Verts = new HashSet<Vertex>();
+            
             
 
-            FirstGraph.PrintGraph();
 
-            FirstGraph.AddVertex();
 
-            FirstGraph.AddEdge(1, 5, 15);
-            FirstGraph.AddEdge(3, 5, 8);
+            return A;
+        }
 
-            FirstGraph.PrintGraph();
-
-            FirstGraph.RemoveEdge(0, 2);
-
-            FirstGraph.RemoveVertex(4);
-
-            FirstGraph.PrintGraph();
+        class Vertex
+        {
+            public int index, key;
         }
     }
 
-    class Graph
+   
+
+    class Graph : ICloneable
     {
-        public List<SortedList<int,int>> Verticies;
+        public List<SortedList<int,int>> Vertices;
 
         public Graph() {
-            Verticies = new List<SortedList<int, int>>(); 
+            Vertices = new List<SortedList<int, int>>(); 
         }
 
         public void AddEdge(int V1, int V2)
@@ -51,26 +149,34 @@ namespace Graphs
             AddEdge(V1, V2, 1);
         }
 
-        public void AddEdge(int V1, int V2, int Weigth)
+        public virtual void AddEdge(int V1, int V2, int Weigth)
         {
-            Verticies[V1].Add(V2, Weigth);
-            Verticies[V2].Add(V1, Weigth);
+            if (Vertices[V1].ContainsKey(V2))
+                return;
+
+            Vertices[V1].Add(V2, Weigth);
+            Vertices[V2].Add(V1, Weigth);
+        }
+
+        public virtual void RemoveEdge(int V1, int V2)
+        {
+            Vertices[V1].Remove(V2);
+            Vertices[V2].Remove(V1);
+        }
+
+        public int getEdgeWeight(int V1, int V2)
+        {
+            return Vertices[V1].GetValueOrDefault(V2);
         }
 
         public SortedList<int, int> GetVertex(int Value)
         {
-            return Verticies[Value];
-        }
-
-        public void RemoveEdge(int V1, int V2)
-        {
-            Verticies[V1].Remove(V2);
-            Verticies[V2].Remove(V1);
+            return Vertices[Value];
         }
 
         public void AddVertex()
         {
-            Verticies.Add(new SortedList<int, int>());
+            Vertices.Add(new SortedList<int, int>());
         }
 
         public void AddVerticies(int Number)
@@ -81,21 +187,49 @@ namespace Graphs
 
         public void RemoveVertex(int Value)
         {
-            Verticies.Remove(GetVertex(Value));
-            Verticies.ForEach(Edges => Edges.Remove(Value)); 
+            Vertices.Remove(GetVertex(Value));
+            Vertices.ForEach(Edges => Edges.Remove(Value)); 
         }
 
         public void PrintGraph()
         {
-            foreach (SortedList<int,int> Edges in Verticies)
+            foreach (SortedList<int,int> Edges in Vertices)
             {
-                Console.WriteLine("Vertex {0} is connected to: ", Verticies.IndexOf(Edges) + 1);
+                Console.WriteLine("Vertex {0} is connected to: ", Vertices.IndexOf(Edges));
                 foreach (KeyValuePair<int,int> Pair in Edges)
                 {
-                    Console.Write("{0} ({1}); ", Pair.Key + 1, Pair.Value);
+                    Console.Write("{0} ({1}); ", Pair.Key, Pair.Value);
                 }
                 Console.WriteLine("\n");
             }
+        }
+
+        public object Clone()
+        {
+            Graph G = new Graph();
+            G.AddVerticies(this.Vertices.Count);
+            Vertices.ForEach(Edges =>
+            {
+                foreach (var Edge in Edges)
+                {
+                    G.AddEdge(Edges.IndexOfKey(Edge.Key), Edge.Key, Edge.Value);
+                }
+            });
+            return G;
+        }
+    }
+
+    class DirectedGraph : Graph
+    {
+
+        public override void AddEdge(int V1, int V2, int Weigth)
+        {
+            Vertices[V1].Add(V2, Weigth);
+        }
+
+        public override void RemoveEdge(int V1, int V2)
+        {
+            Vertices[V1].Remove(V2);
         }
     }
 }
