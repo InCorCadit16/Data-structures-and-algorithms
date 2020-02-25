@@ -440,28 +440,24 @@ namespace Data_structures_and_algorithms
 
         static void Main(string[] args)
         {
-            int[] input = new int[10];
-            int[] input1 = new int[10];
-            int[] input2 = new int[6];
+            int[] input = new int[10000000];
+            int[] input1 = new int[10000000];
             Random random = new Random();
             for (int i = 0; i < input.Length; i++)
             {
                 input[i] = random.Next(1, 3000);
                 input1[i] = input[i];
-                //input2[i] = input[i];
             }
             
 
             Sorting Sort = new Sorting();
             /*Sort.WriteArray("input : ", input);
-            Sort.WriteArray("input1: ", input1);
-            Sort.WriteArray("input2: ", input2);*/
+            Sort.WriteArray("input1: ", input1);*/
 
             PrintTime(Sort.MergeSort, input, 0, input.Length - 1);
 
             /*Sort.WriteArray("input sorted : ", input);
-            Sort.WriteArray("input1 sorted: ", input1);
-            Sort.WriteArray("input2 sorted: ", input2);*/
+            Sort.WriteArray("input1 sorted: ", input1);*/
         }
 
         static void PrintTime(Action<int[]> Function, int[] input)
@@ -469,10 +465,7 @@ namespace Data_structures_and_algorithms
             DateTime start = DateTime.Now;
             Function(input);
             DateTime end = DateTime.Now;
-            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
-            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
-            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
-            Console.WriteLine("{0} time: {1:F6} ",  MethodName ,(Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+            Console.WriteLine("{0} time: {1:F6} ", Function.Method.Name, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
         }
 
         static void PrintTime(Action<int[], int> Function, int[] input, int i)
@@ -480,10 +473,7 @@ namespace Data_structures_and_algorithms
             DateTime start = DateTime.Now;
             Function(input, i);
             DateTime end = DateTime.Now;
-            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
-            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
-            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
-            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+            Console.WriteLine("{0} time: {1:F6} ", Function.Method.Name, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
         }
 
         static void PrintTime(Action<int[], int, int> Function, int[] input, int l, int r)
@@ -491,10 +481,7 @@ namespace Data_structures_and_algorithms
             DateTime start = DateTime.Now;
             Function(input, l, r);
             DateTime end = DateTime.Now;
-            int SpacePlace = Function.Method.ToString().IndexOf(" ") + 1;
-            int Length = Function.Method.ToString().IndexOf("(") - SpacePlace;
-            string MethodName = Function.Method.ToString().Substring(SpacePlace, Length);
-            Console.WriteLine("{0} time: {1:F6} ", MethodName, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
+            Console.WriteLine("{0} time: {1:F6} ", Function.Method.Name, (Math.Abs(end.Ticks - start.Ticks) / 10000000f));
         }
     }
 }
