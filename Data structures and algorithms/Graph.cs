@@ -28,10 +28,9 @@ namespace Graphs
             FirstGraph.AddEdge(7, 8, 8);
 
             Prim(FirstGraph).PrintGraph();
+            Kruskal(FirstGraph).PrintGraph();
             
         }
-
-        
 
         static Graph Kruskal(Graph I)
         {
@@ -115,22 +114,68 @@ namespace Graphs
             Sets.Remove(SetR);
         }
 
+      
+
         static Graph Prim(Graph I)
         {
+            var parent = new int[I.Vertices.Count];
+            var keys = new int[I.Vertices.Count];
+            var Mst = new bool[I.Vertices.Count];
+
+            for (int i = 0; i < parent.Length; i++)
+            {
+                keys[i] = int.MaxValue;
+                Mst[i] = false;
+            }
+
+            keys[0] = 0;
+            parent[0] = -1;
+
+            for (int i = 0; i < parent.Length - 1; i++)
+            {
+                int U = GetMinTrue(keys, Mst);
+                Mst[U] = true;
+
+                foreach (var pair in I.GetVertex(U))
+                {
+                    if (!Mst[pair.Key] && pair.Value < keys[pair.Key])
+                    {
+                        parent[pair.Key] = U;
+                        keys[pair.Key] = pair.Value;
+                    }
+                }
+            }
+
             Graph A = new Graph();
             A.AddVerticies(I.Vertices.Count);
-            var Verts = new HashSet<Vertex>();
-            
-            
-
-
-
+            for (int i = 1; i < parent.Length; i++)
+            {
+                A.AddEdge(i, parent[i], keys[i]);
+            }
             return A;
         }
 
-        class Vertex
+        static int GetMinTrue(int[] keys, bool[] Mst)
         {
-            public int index, key;
+            int min_key = keys[0], min = 0;
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (!Mst[i])
+                {
+                    min_key = keys[i];
+                    min = i;
+                    break;
+                }
+            }
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] < min_key && !Mst[i])
+                {
+                    min_key = keys[i];
+                    min = i;
+                }
+            }
+            return min;
         }
     }
 
