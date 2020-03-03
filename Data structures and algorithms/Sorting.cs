@@ -188,11 +188,11 @@ namespace Data_structures_and_algorithms
                 head.Insert(arr[i]);
             }
 
-            ArrayList result = new ArrayList();
+            var result = new List<int>();
             head.InorderTraversal(result);
 
             for (int i = 0; i < arr.Length; i++)
-                arr[i] = (int) result.ToArray()[i];
+                arr[i] = result[i];
         }
 
         private class Node
@@ -227,7 +227,7 @@ namespace Data_structures_and_algorithms
                 }
             }
 
-            public void InorderTraversal(ArrayList list)
+            public void InorderTraversal(List<int> list)
             {
                 if (left != null)
                     left.InorderTraversal(list);
@@ -331,14 +331,12 @@ namespace Data_structures_and_algorithms
         // Затем каждый элемент последовательно ставиться в верх хипа и процедура вызывается рекурсивно.
         public void HeapSort(int[] arr)
         {
-            int HeapSize = arr.Length;
-            BuilMaxHeap(arr, HeapSize);
+            BuilMaxHeap(arr, arr.Length);
             
             for (int i = arr.Length - 1; i > 0; i--)
             {
                 Swap(ref arr[0], ref arr[i]);
-                HeapSize--;
-                MaxHeapify(arr, 0, HeapSize);
+                MaxHeapify(arr, 0, i);
             }
         }
 
@@ -438,6 +436,24 @@ namespace Data_structures_and_algorithms
             
         }
 
+        private void ShellSort(int[] arr)
+        {
+            for (int gap = arr.Length/2; gap > 0; gap /= 2)
+            {
+                for (int i = gap; i < arr.Length; i++)
+                {
+                    int key = arr[i];
+                    int j;
+                    for (j = i; j >= gap && arr[j - gap] > key; j -= gap)
+                    {
+                        arr[j] = arr[j - gap];
+                    }
+
+                    arr[j] = key;
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             int[] input = new int[15];
@@ -457,7 +473,7 @@ namespace Data_structures_and_algorithms
             /*Sort.WriteArray("input1: ", input1);
             Sort.WriteArray("input2: ", input2);*/
 
-            PrintTime(Sort.QuickSort, input, 0, input.Length - 1);
+            PrintTime(Sort.ShellSort, input);
 
             Sort.WriteArray("input sorted : ", input);
             /*Sort.WriteArray("input1 sorted: ", input1);
