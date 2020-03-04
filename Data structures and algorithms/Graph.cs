@@ -28,6 +28,7 @@ namespace Graphs
             FirstGraph.AddEdge(7, 8, 8);
 
             Dijkstra(FirstGraph).PrintGraph();
+            Console.ReadLine();
             
         }
 
@@ -194,7 +195,7 @@ namespace Graphs
                 inA[i] = false;
             }
 
-            for (int i = 0; i < values.Length; i++)
+            for (int i = 0; i < values.Length - 1; i++)
             {
                 int min = GetMinTrue(values, inA);
                 inA[min] = true;
@@ -202,11 +203,25 @@ namespace Graphs
                 Edge minEdge = new Edge { left = min, weight = int.MaxValue };
                 foreach (var pair in I.GetVertex(min))
                 {
-                                            
+                    if (values[min] + pair.Value < values[pair.Key] && !inA[pair.Key])
+                    {
+                        values[pair.Key] = values[min] + pair.Value;
+                        minFrom[pair.Key] = min;
+                    }                            
+                }
+
+                for (int c = 0; c < values.Length; c++)
+                {
+                    if (values[c] < minEdge.weight && !inA[c])
+                    {
+                        minEdge.weight = values[c];
+                        minEdge.right = c;
+                        minEdge.left = minFrom[c];
+                    }
                 }
 
                 Edges.Add(minEdge);
-                inA[minEdge.right] = true;
+                //inA[minEdge.right] = true;
             }
 
             foreach (var edge in Edges)
