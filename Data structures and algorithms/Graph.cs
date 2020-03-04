@@ -27,8 +27,7 @@ namespace Graphs
             FirstGraph.AddEdge(7, 0, 11);
             FirstGraph.AddEdge(7, 8, 8);
 
-            Prim(FirstGraph).PrintGraph();
-            Kruskal(FirstGraph).PrintGraph();
+            Dijkstra(FirstGraph).PrintGraph();
             
         }
 
@@ -115,7 +114,6 @@ namespace Graphs
         }
 
       
-
         static Graph Prim(Graph I)
         {
             var parent = new int[I.Vertices.Count];
@@ -155,6 +153,7 @@ namespace Graphs
             return A;
         }
 
+        // For Prims
         static int GetMinTrue(int[] keys, bool[] Mst)
         {
             int min_key = keys[0], min = 0;
@@ -177,6 +176,47 @@ namespace Graphs
             }
             return min;
         }
+
+
+
+        static Graph Dijkstra(Graph I)
+        {
+            var A = new Graph();
+            A.AddVerticies(I.Vertices.Count);
+            int[] values = new int[I.Vertices.Count];
+            int[] minFrom = new int[I.Vertices.Count];
+            bool[] inA = new bool[I.Vertices.Count];
+            var Edges = new List<Edge>();
+
+            for (int i = 1; i < values.Length; i++)
+            {
+                values[i] = int.MaxValue;
+                inA[i] = false;
+            }
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                int min = GetMinTrue(values, inA);
+                inA[min] = true;
+
+                Edge minEdge = new Edge { left = min, weight = int.MaxValue };
+                foreach (var pair in I.GetVertex(min))
+                {
+                                            
+                }
+
+                Edges.Add(minEdge);
+                inA[minEdge.right] = true;
+            }
+
+            foreach (var edge in Edges)
+            {
+                if (A.getEdgeWeight(edge.left, edge.right) == 0)
+                    A.AddEdge(edge.left, edge.right, edge.weight);
+            }
+
+            return A;
+        } 
     }
 
    
