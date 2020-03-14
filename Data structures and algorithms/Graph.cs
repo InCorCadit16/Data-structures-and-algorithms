@@ -10,7 +10,7 @@ namespace Graphs
         public static void Main(string[] args)
         {
             Graph FirstGraph = new Graph();
-            FirstGraph.AddVerticies(9);
+            /*FirstGraph.AddVerticies(9);
 
             FirstGraph.AddEdge(0, 1, 8);
             FirstGraph.AddEdge(0, 8, 4);
@@ -25,11 +25,29 @@ namespace Graphs
             FirstGraph.AddEdge(5, 7, 1);
             FirstGraph.AddEdge(6, 7, 7);
             FirstGraph.AddEdge(7, 0, 11);
-            FirstGraph.AddEdge(7, 8, 8);
+            FirstGraph.AddEdge(7, 8, 8);*/
 
-            Dijkstra(FirstGraph).PrintGraph();
-            Console.ReadLine();
-            
+            FirstGraph.AddVerticies(6);
+
+            FirstGraph.AddEdge(0, 1);
+            FirstGraph.AddEdge(0, 2);
+            FirstGraph.AddEdge(0, 3);
+            FirstGraph.AddEdge(0, 4);
+            FirstGraph.AddEdge(2, 3);
+            FirstGraph.AddEdge(1, 5);
+            FirstGraph.AddEdge(4, 5);
+
+            var path = EulerLoop(FirstGraph);
+            if (path == null)
+                Console.WriteLine("Can\'t build Euler Loop");
+            else
+            {
+                for (int i = 0; i < path.Length; i++)
+                {
+                    Console.Write(path[i] + " ");
+                }
+            }
+                
         }
 
         static Graph Kruskal(Graph I)
@@ -177,9 +195,7 @@ namespace Graphs
             }
             return min;
         }
-
-
-
+        
         static Graph Dijkstra(Graph I)
         {
             var A = new Graph();
@@ -221,20 +237,158 @@ namespace Graphs
                 }
 
                 Edges.Add(minEdge);
-                //inA[minEdge.right] = true;
             }
 
             foreach (var edge in Edges)
             {
-                if (A.getEdgeWeight(edge.left, edge.right) == 0)
+                if (A.GetEdgeWeight(edge.left, edge.right) == 0)
                     A.AddEdge(edge.left, edge.right, edge.weight);
             }
 
             return A;
         } 
-    }
 
-   
+
+        static int[,] Floyd(Graph I)
+        {
+            int size = I.Vertices.Count;
+            var matrix = new int[size, size];
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (i != j)
+                        matrix[i, j] = I.GetEdgeWeight(i, j) == 0 ? int.MaxValue/2 : I.GetEdgeWeight(i, j);
+                    else
+                        matrix[i, j] = 0;
+                }
+            }
+
+            for (int k = 0; k < size; k++)
+            {
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        if (matrix[i, k] + matrix[k, j] < matrix[i, j])
+                            matrix[i, j] = matrix[i, k] + matrix[k, j];
+                    }
+                }
+            }
+
+            return matrix;
+        }
+
+        static void PrintFloyd(int [,] matrix)
+        {
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = i+1; j < matrix.GetLength(1); j++)
+                {
+                    Console.WriteLine($"{i} and {j}: {matrix[i,j]}");
+                }
+            }
+        }
+
+        static Graph HamiltonianLoop(Graph I)
+        {
+            var path = new int[I.Vertices.Count];
+            for (int i = 0; i < path.Length; i++)
+                path[i] = -1;
+
+            path[0] = 0;
+            if (!HamCycleExists(I, path, 1))
+                return null;
+
+
+
+            Graph A = new Graph();
+            A.AddVerticies(path.Length);
+            for (int i = 0; i < path.Length - 1; i++)
+            {
+                A.AddEdge(path[i], path[i + 1], I.GetEdgeWeight(path[i], path[i + 1]));
+            }
+            A.AddEdge(path.First(), path.Last(), I.GetEdgeWeight(path.First(), path.Last()));
+
+            return A;
+        }
+
+        static bool HamCycleExists(Graph I, int[] path, int pos)
+        {
+            if (pos == I.Vertices.Count)
+            {
+                return I.GetEdgeWeight(path[0], path[pos - 1]) != 0;
+            }
+
+
+            for (int v = 1; v < I.Vertices.Count; v++)
+            {
+                if (isSave(v,I,path,pos))
+                {
+                    path[pos] = v;
+
+                    if (HamCycleExists(I, path, pos + 1))
+                        return true;
+
+                    path[pos] = -1;
+                }
+            }
+                
+                
+            return true;
+        }
+
+        static bool isSave(int v, Graph I, int[] path, int pos)
+        {
+            if (I.GetEdgeWeight(path[pos - 1], v) == 0)
+                return false;
+
+            for (int i = 0; i < pos; i++)
+                if (path[i] == v) return false;
+
+            return true;
+        }
+
+        static int[] EulerLoop(Graph I)
+        {
+            for (int i = 0; i < I.Vertices.Count; i++)
+            {
+                var Vertex = I.GetVertex(i);
+                if (Vertex.Count == 0 || Vertex.Count % 2 != 0)
+                    return null;
+            }
+
+            var path = new int[I.GetEdgeCount()+1];
+
+            var A = (Graph) I.Clone();
+
+            int curVertex = 0;
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (i == path.Length - 2)
+                {
+                    path[i] = curVertex;
+                    path[path.Length - 1] = 0;
+                    break;
+                }
+
+                var edgeList = A.GetVertex(curVertex);
+                foreach (var edge in edgeList)
+                {
+                    if (A.GetVertex(edge.Key).Count > 1)
+                    {
+                        path[i] = curVertex;
+                        A.RemoveEdge(curVertex, edge.Key);
+                        curVertex = edge.Key;
+                        break;
+                    }
+                }
+            }
+           
+            return path;
+        }
+    }
 
     class Graph : ICloneable
     {
@@ -264,9 +418,25 @@ namespace Graphs
             Vertices[V2].Remove(V1);
         }
 
-        public int getEdgeWeight(int V1, int V2)
+        public int GetEdgeWeight(int V1, int V2)
         {
             return Vertices[V1].GetValueOrDefault(V2);
+        }
+
+        public int GetEdgeCount()
+        {
+            var edges = new List<(int l, int r)>();
+            for (int i = 0; i < Vertices.Count; i++)
+            {
+                var Vertex = GetVertex(i);
+
+                foreach (var edge in Vertex)
+                {
+                    if (!edges.Any(e => e.l == edge.Key && e.r == i))
+                        edges.Add((i, edge.Key));
+                }
+            }
+            return edges.Count;
         }
 
         public SortedList<int, int> GetVertex(int Value)
@@ -312,7 +482,7 @@ namespace Graphs
             {
                 foreach (var Edge in Edges)
                 {
-                    G.AddEdge(Edges.IndexOfKey(Edge.Key), Edge.Key, Edge.Value);
+                    G.AddEdge(Vertices.IndexOf(Edges), Edge.Key, Edge.Value);
                 }
             });
             return G;
